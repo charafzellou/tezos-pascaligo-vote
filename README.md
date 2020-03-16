@@ -14,19 +14,29 @@ Write a smart voting contract (in LIGO):
 + the smart contract should have unit tests 📋🧪
 
 ## Usage:
-First, make sure you have LIGO installed and correctly set up.
+First, make sure you have LIGO installed and correctly set up :
++ [Tezos - Installation](https://tezos.gitlab.io/introduction/howtoget.html#build-from-sources)
 + [LIGO Lang - Installation](https://ligolang.org/docs/intro/installation/)
 
-Then, copy the contents of this repo and compile, dry-run, and deploy the contract `pascaligoTest.ligo` :
-
+Then, copy the contents of this repo and compile, dry-run, and deploy the contract `votingContract.ligo` :
 ```
-ligo compile-contract pascaligoTest.ligo main
-ligo dry-run pascaligoTest.ligo main "Decrement(2)" 8
-ligo dry-run pascaligoTest.ligo main "Increment(2)" 5
+ligo compile-contract votingContract.ligo main > votingContract.tz
+```
+```
+ligo compile-storage votingContract.ligo main 'record admin = ("tz1LKe9GQfF4wfob11YjH9grP1YdEWZtPe9W": address); paused = False; votes = (map[] : map(address, bool)); end'
+```
+```
+ligo compile-parameter votingContract.ligo main "Vote(record vote = False; end)" 
+ligo compile-parameter votingContract.ligo main "Reset(0)"
+```
+```
+pytest pyTestContract.py
 ```
 
 ## Known Issues:
-
+```
+No function for returning the value of present votes is implemented yet... coming soon!
+```
 
 ## Contributing:
 Pull requests are always welcome 🤓, though keep in mind this smart contract is more for learning purposes than for commercial use.

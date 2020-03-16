@@ -1,5 +1,5 @@
 type action is
-| Vote of int
+| Vote of bool
 | Reset of int
 
 type storageType is record [
@@ -18,6 +18,37 @@ function isPaused (const storage : storageType) : bool is
     skip
   } with (storage.paused)
 
+function submitVote (const vote : bool; const storage : storageType) : (list(operation) * storageType) is
+  block {
+      var numberVotes : int := 0;
+      if (isPaused(storage)) then block {
+        if ( isAdmin(storage) )
+          then block {
+           case storage.votes[sender] of
+             | Some (bool) -> failwith("[VOTER] Your address has already voted.")
+             | None -> block {
+               storage.votes[sender] := vote;
+               for i in map storage.votes block {
+                 numberVotes := numberVotes + 1;
+               };
+               if (numberVotes = 10) then block {
+                 storage.paused := True;
+               }
+              else block {
+                  skip
+                }
+            }
+          end
+        }
+      else block {
+        failwith("[ADMIN] You are the admin, you cannot vote.");
+       }
+     }
+     else block {
+       failwith("[PAUSED] Vote contract is in its paused state.");
+    }
+  } with ((nil: list(operation)) , storage)
+
 function submitReset (const storage : storageType) : (list(operation) * storageType) is
   block {
     if ( isAdmin(storage) )
@@ -34,21 +65,8 @@ function submitReset (const storage : storageType) : (list(operation) * storageT
           }
       }
       else block {
-        failwith("[PAUSED] You need admin privileges to run this function.");
+        failwith("[ADMIN] You need admin privileges to run this function.");
       }
-  } with ((nil: list(operation)) , storage)
-
-function submitVote (const vote : int; const storage : storageType) : (list(operation) * storageType) is
-  block {
-    var result : bool := False;
-    if (isPaused(storage)) then block {
-      // Start Vote
-      skip
-    }
-    else block {
-      // Contract is paused
-      skip
-    }
   } with ((nil: list(operation)) , storage)
 
 function main (const p : action ; const s : storageType) :
