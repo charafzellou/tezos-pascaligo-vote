@@ -11,5 +11,7 @@ jobs:
         - uses: actions/checkout@v2
         - name: Compiling contracts
           run: make compile
-        - name: Testing contracts
-          run: make test
+        - name: LIGO testing for contracts
+          run: make test-ligo
+        - name: Python testing for contracts
+          run: make test-python
