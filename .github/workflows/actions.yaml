@@ -1,0 +1,15 @@
+on:
+  push:
+    branches:
+      - master
+      - dev
+
+jobs:
+    Workflow:
+        runs-on: ubuntu-latest
+        steps:
+        - uses: actions/checkout@v2
+        - name: Compiling contracts
+          run: make compile
+        - name: Testing contracts
+          run: make test
