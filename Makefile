@@ -1,4 +1,4 @@
-LIGO_VER=1.0.0
+LIGO_VER=0.73.0
 LIGO=docker run --platform linux/amd64 --rm -v "$(PWD)":"$(PWD)" -w "$(PWD)" ligolang/ligo:$(LIGO_VER)
 JSON_OPT=--michelson-format json
 
@@ -14,8 +14,8 @@ compile: src/votingContract.mligo
 
 test: test-ligo test-python
 
-test-ligo: tests/votingContract.test.mligo
+test-ligo: tests/ligo/votingContract.test.mligo
 	@$(LIGO) run test $^
 
-test-python:
-	@python3 tests/python/votingContract.test.py
+test-python: tests/python/votingContract.test.py
+	@python3 $^
