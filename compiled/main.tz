@@ -1,0 +1,49 @@
+{ parameter (or (bool %vote) (int %reset)) ;
+  storage (pair (address %admin) (bool %paused) (map %votes address bool)) ;
+  code { LAMBDA
+           (pair address bool (map address bool))
+           bool
+           { SENDER ;
+             SWAP ;
+             CAR ;
+             COMPARE ;
+             EQ ;
+             IF { PUSH bool True } { PUSH bool False } } ;
+         SWAP ;
+         UNPAIR ;
+         IF_LEFT
+           { DROP ;
+             DUP ;
+             GET 3 ;
+             IF { DROP 2 ;
+                  PUSH string "[PAUSED] Vote contract is in its paused state." ;
+                  FAILWITH }
+                { DUP ;
+                  DIG 2 ;
+                  SWAP ;
+                  EXEC ;
+                  IF { DROP ;
+                       PUSH string "[ADMIN] You are the admin, you cannot vote." ;
+                       FAILWITH }
+                     { DUP ;
+                       GET 4 ;
+                       SENDER ;
+                       GET ;
+                       IF_NONE
+                         { DUP ; GET 4 ; UPDATE 4 ; NIL operation ; PAIR }
+                         { DROP 2 ; PUSH string "[VOTER] Your address has already voted." ; FAILWITH } } } }
+           { DROP ;
+             DUP ;
+             DIG 2 ;
+             SWAP ;
+             EXEC ;
+             IF { PUSH bool False ;
+                  UPDATE 3 ;
+                  EMPTY_MAP address bool ;
+                  UPDATE 4 ;
+                  NIL operation ;
+                  PAIR }
+                { DROP ;
+                  PUSH string "[ADMIN] You need admin privileges to run this function." ;
+                  FAILWITH } } } }
+
