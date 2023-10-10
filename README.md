@@ -1,5 +1,5 @@
-# tezos-pascaligo-vote 🗳️
-Simple Smart Contract for voting 🗳️, written in PascaLIGO, for Tezos DLT Blockchain ߷⛓️.
+# tezos-cameligo-vote 🗳️
+Simple Smart Contract for voting 🗳️ written in CameLIGO for Tezos Blockchain ⛓️.
 
 ## Goals:
 Write a smart voting contract (in LIGO):
@@ -44,6 +44,6 @@ Pull requests are always welcome 🤓, though keep in mind this smart contract i
 For bug fixes or improvements, please open an issue and I will get back to you as soon as I can! 🔜
 
 ## License
-Please cite the author [Charaf ZELLOU](https://linkedin.com/in/charafzellou/) and the source [tezos-pascaligo-vote repository](https://github.com/charafzellou/tezos-pascaligo-vote) in any copies, forks or use of the material in this repository.
+Please cite the author [Charaf ZELLOU](https://linkedin.com/in/charafzellou/) and the source [tezos-cameligo-vote repository](https://github.com/charafzellou/tezos-cameligo-vote) in any copies, forks or use of the material in this repository.
 
 [GNU Affero General Public License v3.0](https://choosealicense.com/licenses/agpl-3.0/) 🥐

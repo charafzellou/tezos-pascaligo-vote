@@ -1,0 +1,114 @@
+{ parameter (or (or (unit %reset) (address %setAdmin)) (or (unit %setPaused) (bool %vote))) ;
+  storage
+    (pair (pair (address %admin) (nat %number_of_votes))
+          (bool %paused)
+          (map %votes address bool)) ;
+  code { LAMBDA
+           (pair (pair address nat) bool (map address bool))
+           bool
+           { SENDER ;
+             SWAP ;
+             CAR ;
+             CAR ;
+             COMPARE ;
+             EQ ;
+             IF { PUSH bool True } { PUSH bool False } } ;
+         SWAP ;
+         UNPAIR ;
+         IF_LEFT
+           { IF_LEFT
+               { DROP ;
+                 DUP ;
+                 DIG 2 ;
+                 SWAP ;
+                 EXEC ;
+                 IF { DUP ;
+                      CDR ;
+                      CAR ;
+                      IF { DUP ;
+                           CDR ;
+                           PUSH bool False ;
+                           UPDATE 1 ;
+                           UPDATE 2 ;
+                           DUP ;
+                           CDR ;
+                           EMPTY_MAP address bool ;
+                           UPDATE 2 ;
+                           UPDATE 2 ;
+                           DUP ;
+                           CAR ;
+                           PUSH nat 0 ;
+                           UPDATE 2 ;
+                           UPDATE 1 ;
+                           NIL operation ;
+                           PAIR }
+                         { DROP ; PUSH string "[PAUSED] Vote contract is not paused." ; FAILWITH } }
+                    { DROP ;
+                      PUSH string "[ADMIN] You need admin privileges to run this function." ;
+                      FAILWITH } }
+               { DUP 2 ;
+                 DIG 3 ;
+                 SWAP ;
+                 EXEC ;
+                 IF { DROP 2 ;
+                      PUSH string "[ADMIN] You are the admin, you cannot change the admin." ;
+                      FAILWITH }
+                    { DUP 2 ; DIG 2 ; CAR ; DIG 2 ; UPDATE 1 ; UPDATE 1 ; NIL operation ; PAIR } } }
+           { IF_LEFT
+               { DROP ;
+                 DUP ;
+                 DIG 2 ;
+                 SWAP ;
+                 EXEC ;
+                 IF { DROP ;
+                      PUSH string "[ADMIN] Only the admin can pause the contract." ;
+                      FAILWITH }
+                    { DUP ;
+                      CDR ;
+                      CAR ;
+                      IF { DUP ; CDR ; PUSH bool False ; UPDATE 1 ; UPDATE 2 }
+                         { DUP ; CDR ; PUSH bool True ; UPDATE 1 ; UPDATE 2 } ;
+                      NIL operation ;
+                      PAIR } }
+               { DROP ;
+                 DUP ;
+                 CDR ;
+                 CAR ;
+                 IF { DROP 2 ;
+                      PUSH string "[PAUSED] Vote contract is in its paused state." ;
+                      FAILWITH }
+                    { DUP ;
+                      DIG 2 ;
+                      SWAP ;
+                      EXEC ;
+                      IF { DROP ;
+                           PUSH string "[ADMIN] You are the admin, you cannot vote." ;
+                           FAILWITH }
+                         { PUSH nat 10 ;
+                           DUP 2 ;
+                           CAR ;
+                           CDR ;
+                           COMPARE ;
+                           GE ;
+                           IF { DROP ;
+                                PUSH string "[VOTER] The vote has already been completed (10 votes max)." ;
+                                FAILWITH }
+                              { DUP ;
+                                CDR ;
+                                CDR ;
+                                SENDER ;
+                                GET ;
+                                IF_NONE
+                                  { DUP ;
+                                    CDR ;
+                                    CDR ;
+                                    DUP 2 ;
+                                    DIG 2 ;
+                                    CDR ;
+                                    DIG 2 ;
+                                    UPDATE 2 ;
+                                    UPDATE 2 ;
+                                    NIL operation ;
+                                    PAIR }
+                                  { DROP 2 ; PUSH string "[VOTER] Your address has already voted." ; FAILWITH } } } } } } } }
+
